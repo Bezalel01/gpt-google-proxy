@@ -11,10 +11,18 @@ export default async function handler(req, res) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(req.body),
     });
-    const data = await response.json();
+
+    const text = await response.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { status: "success", raw: text }; // fallback if not JSON
+    }
+
     return res.status(200).json(data);
   } catch (err) {
     return res.status(500).json({ status: "error", message: err.message });
   }
 }
-
